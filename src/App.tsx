@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import TaskBoard from './components/TaskBoard'
+import { TaskBoard } from './components/TaskBoard'
 import './App.css'
 
 export default defineComponent({
@@ -12,3 +12,4 @@ export default defineComponent({
     )
   }
 })
+
