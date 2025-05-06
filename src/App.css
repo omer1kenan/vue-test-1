@@ -59,6 +59,12 @@ nav a:first-of-type {
   }
 }
 
+@media (max-width: 768px) {
+  #app {
+    padding: 0 1rem !important;
+  }
+}
+
 html,
 body {
   margin: 0;

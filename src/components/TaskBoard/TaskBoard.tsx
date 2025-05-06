@@ -13,9 +13,24 @@ export default defineComponent({
     const filterTasksByState = (state: TaskState) => {
       return getTasksByState(tasks.value, state);
     };
+
+
+    const handleTaskDrop = ({ taskId, newState }: { taskId: number, newState: TaskState }) => {
+      const task = tasks.value.find(t => t.id === taskId);
+      if (task) task.state = newState;
+    };
+    const draggedTaskId = ref<number | null>(null);
+
+    const handleDragStart = (taskId: number) => {
+      draggedTaskId.value = taskId;
+      document.querySelectorAll('.task-column').forEach(el => {
+        el.setAttribute('data-dragged', taskId.toString());
+      });
+    };
     return {
       TaskState,
-      getTasksByState: filterTasksByState
+      getTasksByState: filterTasksByState,
+      handleTaskDrop, handleDragStart
     };
   },
   render() {
@@ -23,18 +38,15 @@ export default defineComponent({
       <div class="task-board">
         <h2>Workshop Task Board</h2>
         <div class="board-columns">
-          <TaskColumn
-            title="To Do"
-            tasks={this.getTasksByState(TaskState.TODO)}
-          />
-          <TaskColumn
-            title="In Progress"
-            tasks={this.getTasksByState(TaskState.IN_PROGRESS)}
-          />
-          <TaskColumn
-            title="Done"
-            tasks={this.getTasksByState(TaskState.DONE)}
-          />
+          {[TaskState.TODO, TaskState.IN_PROGRESS, TaskState.DONE].map(state => (
+            <TaskColumn
+              key={state}
+              title={state.toString()}
+              tasks={this.getTasksByState(state)}
+              state={state}
+              onTask-drop={this.handleTaskDrop}
+            />
+          ))}
         </div>
       </div>
     );

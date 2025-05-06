@@ -10,6 +10,13 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['drag-start'],
+  data() {
+    return {
+      isDragging: false,
+      startY: 0
+    };
+  },
   methods: {
     getStatusColor(state: TaskState): string {
       switch (state) {
@@ -31,6 +38,47 @@ export default defineComponent({
       const now = new Date();
       const diff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
       return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`;
+    },
+
+    preventScroll(e: TouchEvent) {
+      e.preventDefault();
+    },
+    handleDragStart(e: DragEvent) {
+      if (!e.currentTarget) return;
+
+      e.stopPropagation();
+      this.$emit('drag-start', this.task.id, e);
+      (e.currentTarget as HTMLElement).classList.add('dragging');
+    },
+    handleDragEnd(e: DragEvent) {
+      if (e.currentTarget) {
+        (e.currentTarget as HTMLElement).classList.remove('dragging');
+      }
+    },
+    handleTouchStart(e: TouchEvent) {
+      if (!e.currentTarget) return;
+
+      this.isDragging = true;
+      this.startY = e.touches[0].clientY;
+      (e.currentTarget as HTMLElement).classList.add('dragging');
+    },
+    handleTouchMove(e: TouchEvent) {
+      if (!this.isDragging || !e.currentTarget) return;
+
+      const y = e.touches[0].clientY;
+      if (Math.abs(y - this.startY) > 10) {
+        const dragEvent = new DragEvent('dragstart', {
+          dataTransfer: new DataTransfer()
+        });
+        dragEvent.dataTransfer?.setData('text/plain', this.task.id.toString());
+        this.$emit('drag-start', this.task.id, dragEvent);
+      }
+    },
+    handleTouchEnd(e: TouchEvent) {
+      this.isDragging = false;
+      if (e.currentTarget) {
+        (e.currentTarget as HTMLElement).classList.remove('dragging');
+      }
     }
   },
   render() {
@@ -39,7 +87,15 @@ export default defineComponent({
     const timeAgo = this.getTimeAgo(this.task.createdAt);
 
     return (
-      <div class={`task-card task-${color}`}>
+      <div
+        class={`task-card task-${color}`}
+        draggable="true"
+        onDragstart={this.handleDragStart}
+        onDragend={this.handleDragEnd}
+        onTouchstart={this.handleTouchStart}
+        onTouchmove={this.handleTouchMove}
+        onTouchend={this.handleTouchEnd}
+      >
         <h4>{icon} {this.task.title}</h4>
         <p>{this.task.description}</p>
         <span class="task-date">{timeAgo}</span>

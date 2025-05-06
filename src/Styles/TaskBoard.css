@@ -110,6 +110,7 @@
 
 @media (max-width: 768px) {
   .task-board {
+    padding: 10px;
     height: auto;
     min-height: 100vh;
   }
@@ -117,15 +118,46 @@
   .board-columns {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 0 10px;
+    gap: 12px;
+    padding: 0 5px;
   }
 
   .task-column,
   .column {
-    width: 100%;
-    background: #f5f5f5;
-    border-radius: 8px;
-    padding: 16px;
+    width: calc(100% - 10px);
+    margin: 0 5px;
+    padding: 12px;
   }
+
+  .task-card {
+    padding: 12px;
+    margin: 0 0 10px 0;
+  }
+
+  .task-list {
+    max-height: none;
+  }
+}
+
+.task-card {
+  user-select: none;
+  cursor: grab;
+}
+
+.task-card:active {
+  cursor: grabbing;
+}
+
+.task-column.dragover {
+  background: rgba(76, 175, 80, 0.1);
+  border: 2px dashed #4CAF50;
+}
+
+.task-card.dragging {
+  opacity: 0.5;
+}
+
+.task-list {
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
 }

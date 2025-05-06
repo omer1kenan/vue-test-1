@@ -45,3 +45,67 @@
 .task-green {
     border-left-color: #2ecc71;
 }
+
+
+.task-card {
+    user-select: none;
+    cursor: grab;
+}
+
+
+.task-card[draggable="true"] {
+    cursor: grab;
+}
+
+.task-card[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.task-card {
+    width: calc(100% - 10px);
+    margin: 0 auto 10px;
+    touch-action: none;
+}
+
+@media (hover: none) {
+    .task-card[draggable="true"] {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .task-card:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.task-card {
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.task-column.dragover {
+    transition: all 0.2s ease;
+}
+
+.task-list {
+    -webkit-overflow-scrolling: touch;
+}
+
+.task-card {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-drag: element;
+    position: relative;
+}
+
+.task-card.dragging {
+    opacity: 0.7;
+    z-index: 1000;
+    transition: none;
+}
+
+@media (pointer: coarse) {
+    .task-card {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
