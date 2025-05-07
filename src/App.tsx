@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
-import { TaskBoard } from './components/TaskBoard'
+import { TaskBoard } from './components/tasks'
 import './App.css'
+import './Styles/main.css'
 
 export default defineComponent({
   name: 'App',
