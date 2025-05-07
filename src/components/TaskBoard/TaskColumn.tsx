@@ -2,6 +2,7 @@ import { defineComponent } from 'vue';
 import { type Task, TaskState } from '../../model/task';
 import TaskCard from './TaskCard';
 
+
 export default defineComponent({
   name: 'TaskColumn',
   components: { TaskCard },
@@ -19,7 +20,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['task-drop'],
+  emits: ['task-drop', 'context-open'],
   methods: {
     handleDragOver(e: DragEvent) {
       e.preventDefault();
@@ -34,7 +35,6 @@ export default defineComponent({
     handleDrop(e: DragEvent) {
       e.preventDefault();
       (e.currentTarget as HTMLElement).classList.remove('dragover');
-
       if (!e.dataTransfer) return;
       const taskId = parseInt(e.dataTransfer.getData('text/plain'));
       if (!isNaN(taskId)) {
@@ -43,6 +43,9 @@ export default defineComponent({
           newState: this.state
         });
       }
+    },
+    handleContextOpen(payload: { taskId: number; x: number; y: number }) {
+      this.$emit('context-open', payload);
     }
   },
   render() {
@@ -65,6 +68,7 @@ export default defineComponent({
                   e.dataTransfer.effectAllowed = 'move';
                 }
               }}
+              onContext-open={this.handleContextOpen}
             />
           ))}
         </div>

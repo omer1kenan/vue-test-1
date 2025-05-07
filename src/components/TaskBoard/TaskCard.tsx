@@ -10,7 +10,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['drag-start'],
+  emits: ['drag-start', 'context-open'],
   data() {
     return {
       isDragging: false,
@@ -39,13 +39,16 @@ export default defineComponent({
       const diff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
       return diff === 0 ? 'Today' : `${diff} day${diff > 1 ? 's' : ''} ago`;
     },
-
-    preventScroll(e: TouchEvent) {
+    handleContextMenu(e: MouseEvent) {
       e.preventDefault();
+      this.$emit('context-open', {
+        taskId: this.task.id,
+        x: e.clientX,
+        y: e.clientY
+      });
     },
     handleDragStart(e: DragEvent) {
       if (!e.currentTarget) return;
-
       e.stopPropagation();
       this.$emit('drag-start', this.task.id, e);
       (e.currentTarget as HTMLElement).classList.add('dragging');
@@ -57,14 +60,12 @@ export default defineComponent({
     },
     handleTouchStart(e: TouchEvent) {
       if (!e.currentTarget) return;
-
       this.isDragging = true;
       this.startY = e.touches[0].clientY;
       (e.currentTarget as HTMLElement).classList.add('dragging');
     },
     handleTouchMove(e: TouchEvent) {
       if (!this.isDragging || !e.currentTarget) return;
-
       const y = e.touches[0].clientY;
       if (Math.abs(y - this.startY) > 10) {
         const dragEvent = new DragEvent('dragstart', {
@@ -95,6 +96,7 @@ export default defineComponent({
         onTouchstart={this.handleTouchStart}
         onTouchmove={this.handleTouchMove}
         onTouchend={this.handleTouchEnd}
+        onContextmenu={this.handleContextMenu}
       >
         <h4>{icon} {this.task.title}</h4>
         <p>{this.task.description}</p>
