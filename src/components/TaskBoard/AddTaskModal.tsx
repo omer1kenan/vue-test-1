@@ -1,5 +1,4 @@
-// components/AddTaskModal.tsx
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { TaskState } from '../../model/task';
 
 export default defineComponent({
@@ -14,12 +13,24 @@ export default defineComponent({
     setup(props, { emit }) {
         const title = ref('');
         const description = ref('');
+        const titleError = ref('');
+        const isFormValid = ref(false);
+
+        watch([title, description], () => {
+            validateForm();
+        });
+
+        const validateForm = () => {
+            titleError.value = title.value.trim() ? '' : 'Title is required';
+            isFormValid.value = !titleError.value;
+        };
 
         const handleSubmit = () => {
-            if (title.value.trim()) {
+            validateForm();
+            if (isFormValid.value) {
                 emit('add-task', {
-                    title: title.value,
-                    description: description.value,
+                    title: title.value.trim(),
+                    description: description.value.trim(),
                     state: TaskState.TODO
                 });
                 resetForm();
@@ -30,6 +41,8 @@ export default defineComponent({
         const resetForm = () => {
             title.value = '';
             description.value = '';
+            titleError.value = '';
+            isFormValid.value = false;
         };
 
         const handleClose = () => {
@@ -40,8 +53,11 @@ export default defineComponent({
         return {
             title,
             description,
+            titleError,
+            isFormValid,
             handleSubmit,
-            handleClose
+            handleClose,
+            validateForm
         };
     },
     render() {
@@ -60,8 +76,10 @@ export default defineComponent({
                                     type="text"
                                     v-model={this.title}
                                     placeholder="Task title"
-                                    required
+                                    class={this.titleError ? 'invalid' : ''}
+                                    onBlur={this.validateForm}
                                 />
+                                {this.titleError && <span class="error-message">{this.titleError}</span>}
                             </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
@@ -75,7 +93,13 @@ export default defineComponent({
                                 <button type="button" onClick={this.handleClose}>
                                     Cancel
                                 </button>
-                                <button type="submit">Add Task</button>
+                                <button
+                                    type="submit"
+                                    disabled={!this.isFormValid}
+                                    class={!this.isFormValid ? 'disabled' : ''}
+                                >
+                                    Add Task
+                                </button>
                             </div>
                         </form>
                     </div>

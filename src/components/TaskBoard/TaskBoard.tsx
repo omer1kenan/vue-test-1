@@ -70,10 +70,12 @@ export default defineComponent({
       document.removeEventListener('click', handleClickOutside);
     });
     const handleAddTask = (newTask: { title: string; description: string }) => {
+      if (!newTask.title.trim()) return;
+
       tasks.value.push({
         id: Math.max(0, ...tasks.value.map(t => t.id)) + 1,
-        title: newTask.title,
-        description: newTask.description,
+        title: newTask.title.trim(),
+        description: newTask.description.trim(),
         state: TaskState.TODO,
         createdAt: new Date()
       });

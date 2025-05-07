@@ -234,3 +234,23 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.invalid {
+  border-color: #f44336 !important;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+}
+
+.modal-actions button.disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.6;
+}
